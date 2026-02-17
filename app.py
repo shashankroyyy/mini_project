@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
 # ============================
-# STREAMLIT PAGE CONFIG
+# STREAMLIT PAGE CONFIG    
 # ============================
 st.set_page_config(page_title="Hyderabad Metro Planner", layout="wide")
       
