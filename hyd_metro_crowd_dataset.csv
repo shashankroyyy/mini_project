@@ -1,0 +1,347 @@
+station,hour,day_type,crowd_level
+Miyapur,6,weekday,High
+Miyapur,7,weekday,Medium
+Miyapur,8,weekday,Medium
+Miyapur,10,weekday,Medium
+Miyapur,11,weekday,High
+Miyapur,12,weekday,High
+Miyapur,13,weekday,Low
+Miyapur,14,weekday,Medium
+Miyapur,15,weekday,Low
+Miyapur,16,weekday,Low
+Miyapur,17,weekday,Medium
+Miyapur,18,weekday,Low
+Miyapur,19,weekday,High
+Miyapur,20,weekday,Low
+Miyapur,21,weekday,Low
+Miyapur,22,weekday,Low
+Miyapur,7,weekend,Low
+Miyapur,8,weekend,Medium
+Miyapur,10,weekend,Low
+Miyapur,11,weekend,Medium
+Miyapur,12,weekend,High
+Miyapur,13,weekend,High
+Miyapur,14,weekend,Low
+Miyapur,15,weekend,Medium
+Miyapur,16,weekend,Medium
+Miyapur,18,weekend,Medium
+Miyapur,19,weekend,Low
+Miyapur,20,weekend,Medium
+Miyapur,22,weekend,Low
+JNTU College,6,weekday,Low
+JNTU College,7,weekday,Medium
+JNTU College,8,weekday,Medium
+JNTU College,9,weekday,High
+JNTU College,12,weekday,Low
+JNTU College,13,weekday,Low
+JNTU College,14,weekday,Medium
+JNTU College,15,weekday,Medium
+JNTU College,16,weekday,Medium
+JNTU College,18,weekday,High
+JNTU College,20,weekday,High
+JNTU College,21,weekday,Medium
+JNTU College,22,weekday,Low
+JNTU College,6,weekend,Medium
+JNTU College,7,weekend,Low
+JNTU College,8,weekend,Low
+JNTU College,10,weekend,Low
+JNTU College,11,weekend,Low
+JNTU College,12,weekend,Low
+JNTU College,13,weekend,Medium
+JNTU College,14,weekend,Low
+JNTU College,16,weekend,Medium
+JNTU College,17,weekend,Low
+JNTU College,19,weekend,Medium
+JNTU College,20,weekend,High
+JNTU College,21,weekend,Low
+JNTU College,22,weekend,Low
+KPHB Colony,6,weekday,Medium
+KPHB Colony,7,weekday,Low
+KPHB Colony,9,weekday,Medium
+KPHB Colony,10,weekday,Low
+KPHB Colony,12,weekday,Medium
+KPHB Colony,13,weekday,Low
+KPHB Colony,14,weekday,High
+KPHB Colony,15,weekday,Medium
+KPHB Colony,16,weekday,Low
+KPHB Colony,17,weekday,High
+KPHB Colony,18,weekday,Low
+KPHB Colony,19,weekday,Medium
+KPHB Colony,21,weekday,Low
+KPHB Colony,22,weekday,Medium
+KPHB Colony,6,weekend,Low
+KPHB Colony,7,weekend,Medium
+KPHB Colony,8,weekend,High
+KPHB Colony,9,weekend,High
+KPHB Colony,12,weekend,Medium
+KPHB Colony,13,weekend,Medium
+KPHB Colony,14,weekend,Low
+KPHB Colony,15,weekend,Medium
+KPHB Colony,16,weekend,Low
+KPHB Colony,17,weekend,High
+KPHB Colony,18,weekend,Medium
+KPHB Colony,19,weekend,Low
+KPHB Colony,20,weekend,Low
+KPHB Colony,21,weekend,Low
+KPHB Colony,22,weekend,Low
+Ameerpet,6,weekday,Medium
+Ameerpet,7,weekday,Medium
+Ameerpet,8,weekday,High
+Ameerpet,10,weekday,Low
+Ameerpet,11,weekday,High
+Ameerpet,13,weekday,Low
+Ameerpet,15,weekday,High
+Ameerpet,16,weekday,High
+Ameerpet,17,weekday,High
+Ameerpet,18,weekday,Low
+Ameerpet,19,weekday,Medium
+Ameerpet,20,weekday,Medium
+Ameerpet,6,weekend,Low
+Ameerpet,7,weekend,Medium
+Ameerpet,9,weekend,Medium
+Ameerpet,10,weekend,High
+Ameerpet,11,weekend,Medium
+Ameerpet,13,weekend,Low
+Ameerpet,14,weekend,High
+Ameerpet,15,weekend,Low
+Ameerpet,16,weekend,High
+Ameerpet,18,weekend,Medium
+Ameerpet,19,weekend,Medium
+Ameerpet,20,weekend,Medium
+Ameerpet,22,weekend,Low
+SR Nagar,6,weekday,Low
+SR Nagar,7,weekday,Medium
+SR Nagar,8,weekday,Low
+SR Nagar,9,weekday,Medium
+SR Nagar,12,weekday,Medium
+SR Nagar,13,weekday,Low
+SR Nagar,16,weekday,High
+SR Nagar,17,weekday,Low
+SR Nagar,18,weekday,Low
+SR Nagar,19,weekday,High
+SR Nagar,20,weekday,Medium
+SR Nagar,21,weekday,Low
+SR Nagar,22,weekday,Medium
+SR Nagar,6,weekend,Low
+SR Nagar,7,weekend,Low
+SR Nagar,8,weekend,High
+SR Nagar,9,weekend,Medium
+SR Nagar,10,weekend,Low
+SR Nagar,11,weekend,High
+SR Nagar,12,weekend,Medium
+SR Nagar,13,weekend,Low
+SR Nagar,14,weekend,Medium
+SR Nagar,15,weekend,Low
+SR Nagar,16,weekend,High
+SR Nagar,17,weekend,Low
+SR Nagar,19,weekend,Low
+SR Nagar,20,weekend,High
+SR Nagar,21,weekend,Low
+LB Nagar,6,weekday,Low
+LB Nagar,8,weekday,High
+LB Nagar,9,weekday,Low
+LB Nagar,11,weekday,Low
+LB Nagar,12,weekday,Low
+LB Nagar,15,weekday,Low
+LB Nagar,16,weekday,Low
+LB Nagar,17,weekday,Low
+LB Nagar,18,weekday,Low
+LB Nagar,19,weekday,Medium
+LB Nagar,20,weekday,High
+LB Nagar,6,weekend,Low
+LB Nagar,7,weekend,Medium
+LB Nagar,8,weekend,Medium
+LB Nagar,9,weekend,High
+LB Nagar,10,weekend,Low
+LB Nagar,12,weekend,Low
+LB Nagar,13,weekend,Low
+LB Nagar,14,weekend,Low
+LB Nagar,15,weekend,Low
+LB Nagar,16,weekend,Low
+LB Nagar,17,weekend,High
+LB Nagar,18,weekend,Low
+LB Nagar,19,weekend,Low
+LB Nagar,20,weekend,Medium
+LB Nagar,21,weekend,Low
+LB Nagar,22,weekend,High
+Nagole,7,weekday,Low
+Nagole,8,weekday,Low
+Nagole,9,weekday,High
+Nagole,10,weekday,Medium
+Nagole,11,weekday,Low
+Nagole,12,weekday,Medium
+Nagole,13,weekday,Medium
+Nagole,14,weekday,Medium
+Nagole,15,weekday,Medium
+Nagole,17,weekday,Low
+Nagole,18,weekday,Medium
+Nagole,19,weekday,High
+Nagole,20,weekday,Medium
+Nagole,21,weekday,Low
+Nagole,22,weekday,Low
+Nagole,6,weekend,Low
+Nagole,8,weekend,High
+Nagole,9,weekend,Medium
+Nagole,10,weekend,Medium
+Nagole,11,weekend,Low
+Nagole,12,weekend,Medium
+Nagole,13,weekend,High
+Nagole,14,weekend,Low
+Nagole,15,weekend,High
+Nagole,16,weekend,Low
+Nagole,17,weekend,Low
+Nagole,18,weekend,Medium
+Nagole,19,weekend,High
+Nagole,20,weekend,Low
+Nagole,21,weekend,Low
+Nagole,22,weekend,Low
+Uppal,6,weekday,High
+Uppal,7,weekday,Low
+Uppal,8,weekday,Low
+Uppal,9,weekday,Low
+Uppal,10,weekday,Low
+Uppal,12,weekday,Low
+Uppal,13,weekday,Low
+Uppal,14,weekday,Low
+Uppal,15,weekday,Medium
+Uppal,16,weekday,Medium
+Uppal,17,weekday,Low
+Uppal,18,weekday,Medium
+Uppal,19,weekday,High
+Uppal,20,weekday,Medium
+Uppal,21,weekday,Low
+Uppal,22,weekday,Medium
+Uppal,6,weekend,Low
+Uppal,7,weekend,Low
+Uppal,8,weekend,Medium
+Uppal,9,weekend,Medium
+Uppal,11,weekend,Low
+Uppal,13,weekend,Medium
+Uppal,14,weekend,Medium
+Uppal,15,weekend,Low
+Uppal,17,weekend,Low
+Uppal,18,weekend,Low
+Uppal,19,weekend,High
+Uppal,20,weekend,High
+Uppal,21,weekend,Low
+Uppal,22,weekend,Medium
+Stadium,6,weekday,Medium
+Stadium,7,weekday,High
+Stadium,8,weekday,Medium
+Stadium,9,weekday,Medium
+Stadium,10,weekday,Medium
+Stadium,11,weekday,Medium
+Stadium,12,weekday,Medium
+Stadium,13,weekday,Medium
+Stadium,14,weekday,Low
+Stadium,15,weekday,High
+Stadium,16,weekday,Low
+Stadium,18,weekday,Medium
+Stadium,19,weekday,Medium
+Stadium,20,weekday,Low
+Stadium,21,weekday,High
+Stadium,22,weekday,Medium
+Stadium,6,weekend,Low
+Stadium,7,weekend,Low
+Stadium,8,weekend,High
+Stadium,9,weekend,Low
+Stadium,10,weekend,Low
+Stadium,12,weekend,High
+Stadium,13,weekend,Low
+Stadium,15,weekend,Low
+Stadium,16,weekend,Low
+Stadium,17,weekend,High
+Stadium,18,weekend,Low
+Stadium,19,weekend,High
+Stadium,21,weekend,Low
+Stadium,22,weekend,Low
+Raidurg,6,weekday,Medium
+Raidurg,7,weekday,Low
+Raidurg,8,weekday,Low
+Raidurg,9,weekday,Low
+Raidurg,10,weekday,Medium
+Raidurg,11,weekday,Low
+Raidurg,12,weekday,Low
+Raidurg,13,weekday,Medium
+Raidurg,14,weekday,Low
+Raidurg,15,weekday,Low
+Raidurg,16,weekday,High
+Raidurg,18,weekday,Medium
+Raidurg,19,weekday,Medium
+Raidurg,20,weekday,Low
+Raidurg,21,weekday,Medium
+Raidurg,22,weekday,Medium
+Raidurg,7,weekend,Medium
+Raidurg,8,weekend,Low
+Raidurg,9,weekend,Medium
+Raidurg,10,weekend,Low
+Raidurg,11,weekend,Low
+Raidurg,12,weekend,Low
+Raidurg,13,weekend,Medium
+Raidurg,14,weekend,Medium
+Raidurg,15,weekend,Medium
+Raidurg,16,weekend,Medium
+Raidurg,17,weekend,Medium
+Raidurg,18,weekend,High
+Raidurg,19,weekend,High
+Raidurg,20,weekend,High
+Raidurg,21,weekend,Low
+Raidurg,22,weekend,Medium
+JBS Parade Ground,6,weekday,Low
+JBS Parade Ground,8,weekday,High
+JBS Parade Ground,9,weekday,High
+JBS Parade Ground,10,weekday,High
+JBS Parade Ground,11,weekday,Medium
+JBS Parade Ground,12,weekday,Low
+JBS Parade Ground,13,weekday,Low
+JBS Parade Ground,14,weekday,Low
+JBS Parade Ground,15,weekday,Low
+JBS Parade Ground,16,weekday,Medium
+JBS Parade Ground,17,weekday,High
+JBS Parade Ground,18,weekday,Low
+JBS Parade Ground,19,weekday,Medium
+JBS Parade Ground,20,weekday,High
+JBS Parade Ground,21,weekday,High
+JBS Parade Ground,22,weekday,Low
+JBS Parade Ground,6,weekend,Low
+JBS Parade Ground,7,weekend,Low
+JBS Parade Ground,8,weekend,Low
+JBS Parade Ground,9,weekend,Medium
+JBS Parade Ground,10,weekend,Medium
+JBS Parade Ground,13,weekend,Low
+JBS Parade Ground,14,weekend,Low
+JBS Parade Ground,16,weekend,High
+JBS Parade Ground,17,weekend,High
+JBS Parade Ground,18,weekend,High
+JBS Parade Ground,19,weekend,Medium
+JBS Parade Ground,20,weekend,High
+JBS Parade Ground,21,weekend,Low
+JBS Parade Ground,22,weekend,Low
+MGBS,6,weekday,Low
+MGBS,7,weekday,Low
+MGBS,8,weekday,Low
+MGBS,9,weekday,Medium
+MGBS,10,weekday,Low
+MGBS,11,weekday,High
+MGBS,12,weekday,Medium
+MGBS,13,weekday,Medium
+MGBS,14,weekday,High
+MGBS,15,weekday,Low
+MGBS,17,weekday,Medium
+MGBS,18,weekday,High
+MGBS,19,weekday,High
+MGBS,20,weekday,High
+MGBS,22,weekday,Low
+MGBS,8,weekend,High
+MGBS,9,weekend,Medium
+MGBS,10,weekend,Medium
+MGBS,12,weekend,Medium
+MGBS,13,weekend,Medium
+MGBS,14,weekend,Medium
+MGBS,15,weekend,Low
+MGBS,17,weekend,Medium
+MGBS,18,weekend,Low
+MGBS,19,weekend,Medium
+MGBS,20,weekend,High
+MGBS,21,weekend,Low
+MGBS,22,weekend,Low
