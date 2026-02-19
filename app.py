@@ -1,125 +1,38 @@
-import heapq
-
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+import plotly.graph_objects as go
+import plotly.express as px
+from tensorflow.keras.models import load_model
 
-# ============================
-# STREAMLIT PAGE CONFIG    
-# ============================
-st.set_page_config(page_title="Hyderabad Metro Planner", layout="wide")
-      
-# ============================
-# 1. BUILD SYNTHETIC DATASET
-# ============================
-def build_dataset():
-    stations_info = {
-        "Miyapur": "residential",
-        "JNTU College": "IT_residential",
-        "KPHB Colony": "IT_residential",        
-        "Ameerpet": "interchange",
-        "LB Nagar": "residential",
-        "Nagole": "residential",
-        "Uppal": "residential",
-        "Stadium": "residential",
-        "MGBS": "interchange",
-        "Raidurg": "IT_hub",
-        "JBS Parade Ground": "interchange",
-    }
+from route_planner import get_route_with_future_crowd
 
-    day_types = ["weekday", "weekend"]
-    rows = []
+# -------------------------------------------------
+# PAGE CONFIG
+# -------------------------------------------------
+st.set_page_config(
+    page_title="Hyderabad Metro | Smart Route Planner",
+    page_icon="🚇",
+    layout="wide"
+)
 
-    for station, stype in stations_info.items():
-        for day in day_types:
-            for hour in range(6, 23):  # 6 AM to 10 PM
-                # Rule-based crowd assignment
-                if day == "weekday" and (8 <= hour <= 10 or 17 <= hour <= 20):
-                    # Peak hours on weekday
-                    if stype in ["interchange", "IT_hub", "IT_residential"]:
-                        crowd = "High"
-                    else:
-                        crowd = "Medium"
-                elif day == "weekday" and (11 <= hour <= 16):
-                    # Midday weekday
-                    if stype in ["interchange", "IT_hub", "IT_residential"]:
-                        crowd = "Medium"
-                    else:
-                        crowd = "Low"
-                elif day == "weekday":
-                    # Early morning / late evening weekday
-                    crowd = "Low"
-                else:
-                    # Weekend pattern: generally lower
-                    if 10 <= hour <= 13 and stype in ["interchange", "IT_hub"]:
-                        crowd = "Medium"
-                    else:
-                        crowd = "Low"
-
-                rows.append(
-                    {
-                        "station": station,
-                        "hour": hour,
-                        "day_type": day,
-                        "crowd_level": crowd,
-                    }
-                )
-
-    df = pd.DataFrame(rows)
-    return df
-
-
-# ============================
-# 2. TRAIN ML MODEL
-# ============================
-def train_crowd_model(df: pd.DataFrame):
-    # Encode target
-    crowd_mapping = {"Low": 0, "Medium": 1, "High": 2}
-    df["crowd_encoded"] = df["crowd_level"].map(crowd_mapping)
-
-    # One-hot encode station + day_type
-    X = pd.get_dummies(df[["station", "hour", "day_type"]])
-    Y = df["crowd_encoded"]
-
-    X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, test_size=0.3, random_state=42, stratify=Y
-    )
-
-    model = RandomForestClassifier(
-        n_estimators=300,
-        max_depth=12,
-        class_weight="balanced",
-        random_state=42,
-    )
-    model.fit(X_train, Y_train)
-
-    return model, X, crowd_mapping
-
-
-# ============================
-# 3. METRO GRAPH + COORDINATES
-# ============================
+# -------------------------------------------------
+# METRO GRAPH
+# -------------------------------------------------
 metro_graph = {
     "Miyapur": [("JNTU College", 3)],
     "JNTU College": [("Miyapur", 3), ("KPHB Colony", 3)],
     "KPHB Colony": [("JNTU College", 3), ("SR Nagar", 3)],
     "SR Nagar": [("KPHB Colony", 3), ("Ameerpet", 3)],
     "Ameerpet": [("SR Nagar", 3), ("LB Nagar", 5), ("MGBS", 5), ("Raidurg", 6)],
-    "LB Nagar": [("Ameerpet", 5)],  # Red line
-
+    "LB Nagar": [("Ameerpet", 5)],
     "Nagole": [("Uppal", 3)],
     "Uppal": [("Nagole", 3), ("Stadium", 3)],
     "Stadium": [("Uppal", 3), ("MGBS", 4)],
-    "MGBS": [("Stadium", 4), ("Ameerpet", 5), ("JBS Parade Ground", 4)],  # Blue+Green
-
+    "MGBS": [("Stadium", 4), ("Ameerpet", 5), ("JBS Parade Ground", 4)],
     "Raidurg": [("Ameerpet", 6)],
-
     "JBS Parade Ground": [("MGBS", 4)],
 }
 
-# Schematic coordinates for a simple metro map (not real GPS)
 station_coords = {
     "Miyapur": (0, 0),
     "JNTU College": (1, 0),
@@ -127,259 +40,209 @@ station_coords = {
     "SR Nagar": (3, 0),
     "Ameerpet": (4, 0),
     "LB Nagar": (5, -1),
-    "Nagole": (5, 2),
-    "Uppal": (4, 2),
-    "Stadium": (3, 2),
+    "Raidurg": (6, 0),
     "MGBS": (4, 1),
-    "Raidurg": (5, 0),
+    "Stadium": (3, 2),
+    "Uppal": (4, 2),
+    "Nagole": (5, 2),
     "JBS Parade Ground": (3, 3),
 }
 
-
-def dijkstra_shortest_path(graph, source, destination):
-    heap = [(0, source, [source])]
-    visited = {}
-
-    while heap:
-        current_time, station, path = heapq.heappop(heap)
-
-        if station in visited and visited[station] <= current_time:
-            continue
-
-        visited[station] = current_time
-
-        if station == destination:
-            return current_time, path
-
-        for neighbor, travel_time in graph.get(station, []):
-            new_time = current_time + travel_time
-            new_path = path + [neighbor]
-            heapq.heappush(heap, (new_time, neighbor, new_path))
-
-    return None, []
-
-
-# ============================
-# 4. PREDICTION HELPERS
-# ============================
-def make_predict_crowd(model, X, crowd_mapping):
-    inv_mapping = {v: k for k, v in crowd_mapping.items()}
-
-    def predict_crowd(station_name, hour, day_type):
-        sample = pd.DataFrame(
-            [{"station": station_name, "hour": hour, "day_type": day_type}]
-        )
-        sample_encoded = pd.get_dummies(sample)
-        sample_encoded = sample_encoded.reindex(columns=X.columns, fill_value=0)
-        pred_encoded = model.predict(sample_encoded)[0]
-        return inv_mapping[pred_encoded]
-
-    return predict_crowd
-
-
-def get_route_with_crowd(graph, source, destination, hour, day_type, predict_crowd_fn):
-    total_time, path = dijkstra_shortest_path(graph, source, destination)
-    if not path:
-        return None
-
-    station_crowd = []
-    crowd_to_score = {"Low": 0, "Medium": 1, "High": 2}
-    total_crowd_score = 0
-
-    for station in path:
-        level = predict_crowd_fn(station, hour, day_type)
-        score = crowd_to_score[level]
-        station_crowd.append((station, level))
-        total_crowd_score += score
-
-    avg_crowd_score = total_crowd_score / len(path)
-
-    return {
-        "source": source,
-        "destination": destination,
-        "total_time": total_time,
-        "path": path,
-        "station_crowd": station_crowd,
-        "avg_crowd_score": avg_crowd_score,
-    }
-
-
-# ============================
-# 5. PLOTLY METRO MAP
-# ============================
+# -------------------------------------------------
+# METRO MAP VISUALIZATION
+# -------------------------------------------------
 def build_metro_map(result):
     fig = go.Figure()
 
-    # Define line sequences
-    red_line = ["Miyapur", "JNTU College", "KPHB Colony", "SR Nagar", "Ameerpet", "LB Nagar"]
-    blue_line = ["Nagole", "Uppal", "Stadium", "MGBS", "Ameerpet", "Raidurg"]
-    green_line = ["JBS Parade Ground", "MGBS"]
+    red = ["Miyapur","JNTU College","KPHB Colony","SR Nagar","Ameerpet","LB Nagar"]
+    blue = ["Nagole","Uppal","Stadium","MGBS","Ameerpet","Raidurg"]
+    green = ["JBS Parade Ground","MGBS"]
 
-    def add_line_trace(stations, color_name, name):
-        xs = [station_coords[s][0] for s in stations]
-        ys = [station_coords[s][1] for s in stations]
-        fig.add_trace(
-            go.Scatter(
-                x=xs,
-                y=ys,
-                mode="lines",
-                line=dict(width=3, color=color_name),
-                name=name,
-                hoverinfo="none",
-            )
-        )
+    def draw_line(stations, color, name, dash=None):
+        fig.add_trace(go.Scatter(
+            x=[station_coords[s][0] for s in stations],
+            y=[station_coords[s][1] for s in stations],
+            mode="lines",
+            line=dict(width=6, color=color, dash=dash),
+            name=name,
+            hoverinfo="none"
+        ))
 
-    add_line_trace(red_line, "firebrick", "Red Line")
-    add_line_trace(blue_line, "royalblue", "Blue Line")
-    add_line_trace(green_line, "seagreen", "Green Line")
+    draw_line(red, "#E53935", "Red Line")
+    draw_line(blue, "#1E88E5", "Blue Line")
+    draw_line(green, "#43A047", "Green Line", dash="dot")
 
-    # All stations as labels
-    all_x = [station_coords[s][0] for s in station_coords.keys()]
-    all_y = [station_coords[s][1] for s in station_coords.keys()]
-    all_names = list(station_coords.keys())
+    # Stations
+    fig.add_trace(go.Scatter(
+        x=[station_coords[s][0] for s in station_coords],
+        y=[station_coords[s][1] for s in station_coords],
+        mode="markers+text",
+        text=list(station_coords.keys()),
+        textposition="top center",
+        marker=dict(size=14, color="white", line=dict(width=3, color="#263238")),
+        name="Stations"
+    ))
 
-    fig.add_trace(
-        go.Scatter(
-            x=all_x,
-            y=all_y,
-            mode="markers+text",
-            marker=dict(size=10, color="lightgrey"),
-            text=all_names,
-            textposition="top center",
-            name="Stations",
-            hoverinfo="text",
-        )
-    )
+    # Selected route
+    fig.add_trace(go.Scatter(
+        x=[station_coords[s][0] for s in result["route"]],
+        y=[station_coords[s][1] for s in result["route"]],
+        mode="lines+markers",
+        line=dict(color="#FFD600", width=10),
+        marker=dict(size=18, color="#FFD600"),
+        name="Selected Route"
+    ))
 
-    # Highlight selected route
-    route = result["path"]
-    route_x = [station_coords[s][0] for s in route]
-    route_y = [station_coords[s][1] for s in route]
+    # Crowd overlay
+    color_map = {"Low":"#00E676","Medium":"#FFD54F","High":"#FF5252"}
 
-    fig.add_trace(
-        go.Scatter(
-            x=route_x,
-            y=route_y,
-            mode="lines+markers",
-            line=dict(width=5, color="black"),
-            marker=dict(size=12, color="black"),
-            name="Selected Route",
-        )
-    )
-
-    # Station markers colored by crowd
-    crowd_color_map = {"Low": "green", "Medium": "orange", "High": "red"}
-    scatter_x, scatter_y, scatter_colors, scatter_text = [], [], [], []
-
-    for station, crowd in result["station_crowd"]:
-        scatter_x.append(station_coords[station][0])
-        scatter_y.append(station_coords[station][1])
-        scatter_colors.append(crowd_color_map.get(crowd, "grey"))
-        scatter_text.append(f"{station}: {crowd}")
-
-    fig.add_trace(
-        go.Scatter(
-            x=scatter_x,
-            y=scatter_y,
-            mode="markers",
-            marker=dict(size=16, color=scatter_colors, line=dict(width=1, color="black")),
-            name="Crowd Level",
-            text=scatter_text,
-            hoverinfo="text",
-        )
-    )
+    fig.add_trace(go.Scatter(
+        x=[station_coords[s["station"]][0] for s in result["station_crowd"]],
+        y=[station_coords[s["station"]][1] for s in result["station_crowd"]],
+        mode="markers",
+        marker=dict(
+            size=22,
+            color=[color_map[s["predicted_crowd"]] for s in result["station_crowd"]],
+            line=dict(width=3, color="black")
+        ),
+        text=[
+            f"{s['station']}<br>Arrival: {s['arrival_time']}<br>Crowd: {s['predicted_crowd']}"
+            for s in result["station_crowd"]
+        ],
+        hoverinfo="text",
+        name="Crowd at Arrival"
+    ))
 
     fig.update_layout(
-        title="Hyderabad Metro – Schematic Route & Crowd Map",
+        height=600,
+        plot_bgcolor="#0E1117",
+        paper_bgcolor="#0E1117",
+        font=dict(color="white"),
         xaxis=dict(visible=False),
         yaxis=dict(visible=False),
-        showlegend=True,
-        height=600,
+        legend=dict(orientation="h", y=1.02, x=1, xanchor="right")
     )
 
     return fig
 
+# -------------------------------------------------
+# HEADER
+# -------------------------------------------------
+st.markdown(
+    """
+    <div style="padding:20px;border-radius:12px;
+    background:linear-gradient(90deg,#0F2027,#203A43,#2C5364)">
+    <h1 style="color:white">🚇 Hyderabad Metro Rail Commute Analytics</h1>
+    <p style="color:#B0BEC5">Predictive Crowd Analytics · Dijkstra · LSTM</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-# ============================
-# 6. STREAMLIT APP
-# ============================
-def main():
-    st.title("🚇 Hyderabad Metro Rail Commute analytics")
-    st.caption("B.Tech Mini Project – Data Science + Machine Learning + Graph Algorithms")
+# -------------------------------------------------
+# LOAD LSTM MODEL
+# -------------------------------------------------
+lstm_model = load_model("lstm_crowd_model.h5", compile=False)
 
-    st.markdown(
-        """
-        This tool predicts **crowd levels** for Hyderabad Metro stations and finds the **best route**
-        between two stations using a combination of **Machine Learning** and **Dijkstra's shortest path algorithm**.
-        """
+station_crowd_history = {
+    "Miyapur": [0, 1, 1],          # residential
+    "JNTU College": [1, 1, 2],     # IT + students
+    "KPHB Colony": [1, 2, 2],      # IT residential
+    "SR Nagar": [1, 1, 1],
+    "Ameerpet": [2, 2, 2],         # interchange (very crowded)
+    "LB Nagar": [1, 1, 0],
+    "MGBS": [2, 2, 1],             # major interchange
+    "Raidurg": [2, 2, 2],          # IT hub
+    "Uppal": [1, 1, 0],
+    "Nagole": [0, 1, 1],
+    "Stadium": [0, 0, 1],
+    "JBS Parade Ground": [1, 2, 1]
+}
+
+
+# -------------------------------------------------
+# JOURNEY PLANNER
+# -------------------------------------------------
+st.markdown("## 🧭 Plan Your Journey")
+
+c1, c2, c3 = st.columns(3)
+with c1:
+    source = st.selectbox("Source Station", metro_graph.keys())
+with c2:
+    destination = st.selectbox("Destination Station", metro_graph.keys(), index=4)
+with c3:
+    hour = st.slider("Start Hour", 6, 22, 9)
+
+plan_journey = st.button("🚀 Plan Journey", use_container_width=True)
+
+
+# -------------------------------------------------
+# RESULT SECTION
+# -------------------------------------------------
+if plan_journey:
+    result = get_route_with_future_crowd(
+        metro_graph,
+        source,
+        destination,
+        hour,
+        model=lstm_model,
+        station_crowd_history=station_crowd_history
     )
 
-    # ---- Model preparation section ----
-    st.subheader("Model Preparation")
-    df = build_dataset()
-    model, X, crowd_mapping = train_crowd_model(df)
-    predict_crowd_fn = make_predict_crowd(model, X, crowd_mapping)
-    st.success("Crowd prediction model trained successfully on synthetic metro data.")
+    df = pd.DataFrame(result["station_crowd"])
+    crowd_map = {"Low":0,"Medium":1,"High":2}
+    df["crowd_score"] = df["predicted_crowd"].map(crowd_map)
 
-    # ---- Journey planning section ----
-    st.subheader("Plan Your Metro Journey")
+    st.success("✅ Optimal route and future crowd predicted successfully")
 
-    left_col, right_col = st.columns(2)
+    # ---------------- KPI DASHBOARD ----------------
+    st.markdown("## 📊 Journey Dashboard")
+    k1,k2,k3,k4 = st.columns(4)
+    k1.metric("⏱ Travel Time", f"{result['total_time']} min")
+    k2.metric("🚉 Stations", len(result["route"]))
+    k3.metric("📈 Avg Crowd", round(df["crowd_score"].mean(),2))
+    k4.metric("⚠️ Peak Station", df.loc[df["crowd_score"].idxmax(),"station"])
 
-    with left_col:
-        stations = list(metro_graph.keys())
-        source = st.selectbox("Source station", stations, index=0)
-        destination = st.selectbox("Destination station", stations, index=3)
-        hour = st.slider("Hour of travel (24-hour format)", min_value=6, max_value=22, value=9)
-        day_type = st.radio("Day type", ["weekday", "weekend"], index=0)
-        go = st.button("Plan Journey")
+    # ---------------- DISTRIBUTION ----------------
+    st.markdown("### 🚦 Crowd Distribution")
+    fig1 = px.bar(
+        df,
+        x="predicted_crowd",
+        color="predicted_crowd",
+        color_discrete_map={
+            "Low":"#00E676","Medium":"#FFD54F","High":"#FF5252"
+        },
+        text_auto=True
+    )
+    fig1.update_layout(
+        plot_bgcolor="#0E1117",
+        paper_bgcolor="#0E1117",
+        font_color="white"
+    )
+    st.plotly_chart(fig1, use_container_width=True)
 
-    with right_col:
-        st.info(
-            """
-            **Usage Tips:**
-            - Try **9 AM** or **6 PM** on a **weekday** to see peak-hour crowd at IT and interchange stations.
-            - Try **2 PM** to observe lower crowd.
-            - Weekends generally show lower crowd levels.
-            """
+    # ---------------- TREND ----------------
+    st.markdown("### 📉 Crowd Trend Along Route")
+    fig2 = px.line(df, x="station", y="crowd_score", markers=True)
+    fig2.update_layout(
+        plot_bgcolor="#0E1117",
+        paper_bgcolor="#0E1117",
+        font_color="white",
+        yaxis=dict(
+            tickvals=[0,1,2],
+            ticktext=["Low","Medium","High"]
         )
+    )
+    st.plotly_chart(fig2, use_container_width=True)
 
-    if go:
-        if source == destination:
-            st.error("Source and destination must be different.")
-            return
+    # ---------------- TABLE ----------------
+    st.markdown("### 📍 Station-wise Arrival & Crowd")
+    st.dataframe(
+        df[["station","arrival_time","predicted_crowd"]],
+        use_container_width=True
+    )
 
-        result = get_route_with_crowd(
-            metro_graph, source, destination, hour, day_type, predict_crowd_fn
-        )
-
-        if result is None:
-            st.error("No route found between the selected stations.")
-            return
-
-        st.markdown("### Route Summary")
-        st.write(f"**Source:** {result['source']}")
-        st.write(f"**Destination:** {result['destination']}")
-        st.write(f"**Total Travel Time:** {result['total_time']} minutes")
-        st.write("**Route:** " + " → ".join(result["path"]))
-
-        st.markdown("### Station-wise Crowd Prediction")
-        crowd_rows = [{"Station": stn, "Predicted Crowd": lvl} for stn, lvl in result["station_crowd"]]
-        st.table(pd.DataFrame(crowd_rows))
-
-        avg = result["avg_crowd_score"]
-        st.write(f"**Average Crowd Score (0=Low, 1=Medium, 2=High):** {avg:.2f}")
-        if avg < 0.7:
-            st.success("This route is mostly comfortable (Low crowd).")
-        elif avg < 1.4:
-            st.warning("This route has Medium crowd levels.")
-        else:
-            st.error("This route is quite crowded (High crowd). Consider traveling at a different time.")
-
-        st.markdown("### Metro Route Visualization")
-        fig = build_metro_map(result)
-        st.plotly_chart(fig, use_container_width=True)
-
-
-if __name__ == "__main__":
-    main()
+    # ---------------- MAP ----------------
+    st.markdown("## 🗺 Smart Metro Route Map")
+    st.caption("Highlighted path = optimal route · Colors = predicted crowd at arrival")
+    st.plotly_chart(build_metro_map(result), use_container_width=True)
